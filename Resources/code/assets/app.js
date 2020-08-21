@@ -8,8 +8,8 @@ var svgHeight = 620;
 var chartMargins = {
     top: 20,
     right: 40,
-    bottom: 100,
-    left: 100
+    bottom: 20,
+    left: 20
 };
 
 //Define dimensions of the chart area 
@@ -20,8 +20,8 @@ var chartHeight = svgHeight - chartMargins.top - chartMargins.bottom;
 var svg = d3
             .select("#scatter")
             .append("svg")
-            .attr("height", chartHeight)
-            .attr("width", chartWidth)
+            .attr("height", svgHeight)
+            .attr("width", svgWidth)
 
 //Append group to SVG area and shift 'translate' to the right and to the bottom 
 var chartGroup = svg
@@ -152,10 +152,11 @@ d3.csv("Data.csv").then(function(healthData) {
     // Step 4: Append Axes to the chart
     // ==============================
     chartGroup.append("g")
-      .attr("transform", `translate(0, -20)`)
+      .attr("transform", `translate(20, ${chartHeight})`)
       .call(bottomAxis);
 
     chartGroup.append("g")
+      .attr("transform", `translate(20, 0)`)
       .call(leftAxis);
 
     // Step 5: Create Circles
@@ -167,7 +168,7 @@ d3.csv("Data.csv").then(function(healthData) {
     .attr("cx", d => xLinearScale(d.healthcare))
     .attr("cy", d => yLinearScale(d.income))
     .attr("r", "15")
-    .attr("fill", "pink")
+    // .attr("fill", "pink")
     .attr("opacity", ".5");
     var textGroup = chartGroup
           .selectAll('.stateText')
@@ -184,26 +185,26 @@ d3.csv("Data.csv").then(function(healthData) {
 
     // Step 6: Initialize tool tip
     // ==============================
-    // var toolTip = d3.tip()
-    //   .attr("class", "tooltip")
-    //   .offset([80, -60])
-    //   .html(function(d) {
-    //     return (`Healthcare: ${d.healthcare}<br>Income: ${d.income}`);
-    //   });
+    var toolTip = d3.tip()
+      .attr("class", "tooltip")
+      .offset([80, -60])
+      .html(function(d) {
+        return (`Healthcare: ${d.healthcare}<br>Income: ${d.income}`);
+      });
 
-    // // Step 7: Create tooltip in the chart
-    // // ==============================
-    // chartGroup.call(toolTip);
+    // Step 7: Create tooltip in the chart
+    // ==============================
+    chartGroup.call(toolTip);
 
-    // // Step 8: Create event listeners to display and hide the tooltip
-    // // ==============================
-    // circlesGroup.on("click", function(data) {
-    //   toolTip.show(data, this);
-    // })
-    //   // onmouseout event
-    //   .on("mouseout", function(data, index) {
-    //     toolTip.hide(data);
-    //   });
+    // Step 8: Create event listeners to display and hide the tooltip
+    // ==============================
+    circlesGroup.on("click", function(data) {
+      toolTip.show(data, this);
+    })
+      // onmouseout event
+      .on("mouseout", function(data, index) {
+        toolTip.hide(data);
+      });
 
     // Create axes labels
     chartGroup.append("text")
@@ -215,7 +216,7 @@ d3.csv("Data.csv").then(function(healthData) {
       .text("Average Income Per Capita");
 
     chartGroup.append("text")
-      .attr("transform", `translate(0, -5)`)
+      .attr("transform", `translate(500, ${chartHeight -10})`)
       .attr("class", "axisText")
       .text("Healthcare");
   }).catch(function(error) {
